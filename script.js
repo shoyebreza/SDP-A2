@@ -26,7 +26,7 @@ const displayProduct = (products) => {
                 <div class="card-body">
                     <h5 class="card-title">Name: ${product.strDrink}</h5>
                     <p class="card-text">Category: ${product.strCategory}</p>
-                    <p class="card-text">Instruction: ${product.strInstructions}</p>
+                    <p class="card-text">Instruction: ${product.strInstructions.slice(0,15)}</p>
                     <button class="btn btn-outline-primary">Add to Cart</button>
                     <button class="btn btn-outline-primary">Detail</button>
                 </div>
