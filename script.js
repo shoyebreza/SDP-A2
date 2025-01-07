@@ -27,7 +27,13 @@ const displayProduct = (products) => {
                     <h5 class="card-title">Name: ${product.strDrink}</h5>
                     <p class="card-text">Category: ${product.strCategory}</p>
                     <p class="card-text">Instruction: ${product.strInstructions.slice(0,15)}</p>
-                    <button class="btn btn-outline-primary">Add to Cart</button>
+                    <button class="btn btn-outline-primary" onclick='addToCart({
+                        "id": "${product.idDrink}",
+                        "name": "${product.strDrink}",
+                        "category": "${product.strCategory}",
+                        "image": "${product.strDrinkThumb}"
+                    })'>Add to Cart</button>
+
                     <button class="btn btn-outline-primary" onclick="loadProductDetails(${product.idDrink})">Detail</button>
                 </div>
             </div>
@@ -74,7 +80,8 @@ const displayProductDetails = (product) => {
                 <p><strong>Instructions:</strong> ${product.strInstructions}</p>
                 <p><strong>Ingredients:</strong></p>
                 <ul>
-                    ${[1, 2, 3, 4, 5].map(i => product[`strIngredient${i}`] ? `<li>${product[`strIngredient${i}`]} (${product[`strMeasure${i}`] || ''})</li>` : '').join('')}
+                ${[1, 2, 3, 4, 5].map(i => product[`strIngredient${i}`] ? `<li>${product[`strIngredient${i}`]} (${product[`strMeasure${i}`] || ''})</li>` : '').join('')}
+
                 </ul>
             </div>
         </div>
@@ -84,5 +91,42 @@ const displayProductDetails = (product) => {
     productModal.show();
 };
 
+let cart = [];
+
+const addToCart = (product) => {
+    const existingItem = cart.find(item => item.id === product.id);
+    if (existingItem) {
+        existingItem.quantity += 1; 
+    } else {
+        cart.push({ ...product, quantity: 1 }); 
+    }
+    displayCart();
+};
+
+const displayCart = () => {
+    const cartItems = document.getElementById("cart-items");
+    cartItems.innerHTML = "";
+
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<li class="list-group-item">Cart is empty</li>';
+        return;
+    }
+
+    cart.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `
+            ${item.name} (x${item.quantity})
+            <button class="btn btn-sm btn-danger" onclick="removeFromCart('${item.id}')"><i class="bi bi-trash"></i></button>
+        `;
+        cartItems.appendChild(li);
+    });
+};
+
+
+const removeFromCart = (productId) => {
+    cart = cart.filter(item => item.id !== productId);
+    displayCart();
+};
 
 window.onload = () => loadProduct();
