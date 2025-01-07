@@ -28,7 +28,7 @@ const displayProduct = (products) => {
                     <p class="card-text">Category: ${product.strCategory}</p>
                     <p class="card-text">Instruction: ${product.strInstructions.slice(0,15)}</p>
                     <button class="btn btn-outline-primary">Add to Cart</button>
-                    <button class="btn btn-outline-primary">Detail</button>
+                    <button class="btn btn-outline-primary" onclick="loadProductDetails(${product.idDrink})">Detail</button>
                 </div>
             </div>
         `;
@@ -50,5 +50,39 @@ const searchProduct = (event) => {
         alert("Please enter a search term.");
     }
 };
+
+// Function to load product details by ID
+const loadProductDetails = (productId) => {
+    fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${productId}`)
+        .then(res => res.json())
+        .then(data => displayProductDetails(data.drinks[0]))
+        .catch(error => console.error("Error Something Wrong:", error));
+};
+
+// Function to display product details in the modal
+const displayProductDetails = (product) => {
+    const modalBody = document.getElementById("modalBody");
+    modalBody.innerHTML = `
+        <div class="row">
+            <div class="col-md-4">
+                <img src="${product.strDrinkThumb}" class="img-fluid rounded" alt="${product.strDrink}">
+            </div>
+            <div class="col-md-8">
+                <h4>${product.strDrink}</h4>
+                <p><strong>Category:</strong> ${product.strCategory}</p>
+                <p><strong>Glass:</strong> ${product.strGlass}</p>
+                <p><strong>Instructions:</strong> ${product.strInstructions}</p>
+                <p><strong>Ingredients:</strong></p>
+                <ul>
+                    ${[1, 2, 3, 4, 5].map(i => product[`strIngredient${i}`] ? `<li>${product[`strIngredient${i}`]} (${product[`strMeasure${i}`] || ''})</li>` : '').join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+    // Show the modal
+    const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+    productModal.show();
+};
+
 
 window.onload = () => loadProduct();
